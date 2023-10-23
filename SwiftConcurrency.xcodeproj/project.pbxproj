@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		DB23CD0F2AE3A32D0010F64D /* SwiftConcurrencyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB23CD0E2AE3A32D0010F64D /* SwiftConcurrencyApp.swift */; };
-		DB23CD112AE3A32D0010F64D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB23CD102AE3A32D0010F64D /* ContentView.swift */; };
+		DB23CD112AE3A32D0010F64D /* TaskGroupContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB23CD102AE3A32D0010F64D /* TaskGroupContentView.swift */; };
 		DB23CD132AE3A32E0010F64D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DB23CD122AE3A32E0010F64D /* Assets.xcassets */; };
 		DB23CD162AE3A32E0010F64D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DB23CD152AE3A32E0010F64D /* Preview Assets.xcassets */; };
 		DB23CD202AE3A32E0010F64D /* SwiftConcurrencyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB23CD1F2AE3A32E0010F64D /* SwiftConcurrencyTests.swift */; };
 		DB23CD2A2AE3A32E0010F64D /* SwiftConcurrencyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB23CD292AE3A32E0010F64D /* SwiftConcurrencyUITests.swift */; };
 		DB23CD2C2AE3A32E0010F64D /* SwiftConcurrencyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB23CD2B2AE3A32E0010F64D /* SwiftConcurrencyUITestsLaunchTests.swift */; };
+		DB23CD392AE3A64A0010F64D /* Task+.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB23CD382AE3A64A0010F64D /* Task+.swift */; };
+		DBB768052AE3FBBB008F5096 /* AsyncLetDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB768042AE3FBBB008F5096 /* AsyncLetDemoView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +38,7 @@
 /* Begin PBXFileReference section */
 		DB23CD0B2AE3A32D0010F64D /* SwiftConcurrency.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftConcurrency.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB23CD0E2AE3A32D0010F64D /* SwiftConcurrencyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftConcurrencyApp.swift; sourceTree = "<group>"; };
-		DB23CD102AE3A32D0010F64D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		DB23CD102AE3A32D0010F64D /* TaskGroupContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskGroupContentView.swift; sourceTree = "<group>"; };
 		DB23CD122AE3A32E0010F64D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DB23CD152AE3A32E0010F64D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		DB23CD1B2AE3A32E0010F64D /* SwiftConcurrencyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftConcurrencyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -44,6 +46,8 @@
 		DB23CD252AE3A32E0010F64D /* SwiftConcurrencyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftConcurrencyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB23CD292AE3A32E0010F64D /* SwiftConcurrencyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftConcurrencyUITests.swift; sourceTree = "<group>"; };
 		DB23CD2B2AE3A32E0010F64D /* SwiftConcurrencyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftConcurrencyUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		DB23CD382AE3A64A0010F64D /* Task+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Task+.swift"; sourceTree = "<group>"; };
+		DBB768042AE3FBBB008F5096 /* AsyncLetDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncLetDemoView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,7 +99,9 @@
 			isa = PBXGroup;
 			children = (
 				DB23CD0E2AE3A32D0010F64D /* SwiftConcurrencyApp.swift */,
-				DB23CD102AE3A32D0010F64D /* ContentView.swift */,
+				DB23CD102AE3A32D0010F64D /* TaskGroupContentView.swift */,
+				DBB768042AE3FBBB008F5096 /* AsyncLetDemoView.swift */,
+				DB23CD382AE3A64A0010F64D /* Task+.swift */,
 				DB23CD122AE3A32E0010F64D /* Assets.xcassets */,
 				DB23CD142AE3A32E0010F64D /* Preview Content */,
 			);
@@ -257,7 +263,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DB23CD112AE3A32D0010F64D /* ContentView.swift in Sources */,
+				DBB768052AE3FBBB008F5096 /* AsyncLetDemoView.swift in Sources */,
+				DB23CD392AE3A64A0010F64D /* Task+.swift in Sources */,
+				DB23CD112AE3A32D0010F64D /* TaskGroupContentView.swift in Sources */,
 				DB23CD0F2AE3A32D0010F64D /* SwiftConcurrencyApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
