@@ -12,6 +12,31 @@ enum APIError: Error {
     case lossSomeData
 }
 
+struct UserImageLoader: AsyncSequence, AsyncIteratorProtocol {
+    typealias Element = User
+    
+    let ids: [Int]
+    var currentIndex = 1
+    
+    func makeAsyncIterator() -> UserImageLoader {
+        return self
+    }
+    
+    mutating func next() async throws -> User? {
+        guard currentIndex <= ids.count else { return nil }
+        defer { currentIndex += 1 }
+
+        // 1
+        try await Task.sleep(secounds: 1)
+        let names = ["Test1", "Test2", "Test3", "Test4", "Test5"]
+        return User(name: names[currentIndex - 1], image: "Test\(currentIndex)")
+        // 2
+//        let realImage = try await FetchImageManager.downloadImage()
+//        let names = ["Test1", "Test2", "Test3", "Test4", "Test5"]
+//        return User(name: names[currentIndex - 1], image: "Test\(currentIndex)", realImage: realImage)
+    }
+}
+
 class FetchUserManager {
     static func fetchUser(id: Int) async -> User {
         try! await Task.sleep(secounds: 1)
@@ -116,6 +141,7 @@ extension ContentView: View {
                 List($users.indices, id: \.self) { index in
                     let user = users[index]
                     HStack {
+//                        Image(uiImage: user.realImage ?? UIImage(imageLiteralResourceName: "avatarPlaceholder"))
                         Image(user.image)
                             .resizable().aspectRatio(contentMode: .fill).clipShape(Circle())
                             .frame(width: 120, height: 120)
@@ -145,13 +171,23 @@ extension ContentView: View {
 //        timeMessage = getElapsedTime(from: startTime)
         // 1
         // 2
+//        do {
+//            users = try await FetchUserManager.fetchThrows(userIDs: userIDs)
+//            timeMessage = getElapsedTime(from: startTime)
+//        } catch {
+//            timeMessage = "發生錯誤 \(error)"
+//        }
+        // 2
+        // 3
         do {
-            users = try await FetchUserManager.fetchThrows(userIDs: userIDs)
+            for try await user in UserImageLoader(ids: userIDs) {
+                users.append(user)
+            }
             timeMessage = getElapsedTime(from: startTime)
         } catch {
             timeMessage = "發生錯誤 \(error)"
         }
-        // 2
+        // 3
         isLoading = false
     }
     
