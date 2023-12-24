@@ -12,28 +12,28 @@ enum APIError: Error {
     case lossSomeData
 }
 
-struct UserImageLoader: AsyncSequence, AsyncIteratorProtocol {
+class UserImageLoader: AsyncSequence, AsyncIteratorProtocol {
     typealias Element = User
     
-    let ids: [Int]
-    var currentIndex = 1
+    let userData: [UserData]
+    var currentIndex = 0
+    
+    init(userData: [UserData], currentIndex: Int = 0) {
+        self.userData = userData
+        self.currentIndex = currentIndex
+    }
     
     func makeAsyncIterator() -> UserImageLoader {
         return self
     }
     
-    mutating func next() async throws -> User? {
-        guard currentIndex <= ids.count else { return nil }
+    func next() async throws -> User? {
+        guard currentIndex < userData.count else { return nil }
+        guard let url = URL(string: userData[currentIndex ].imageUrl) else { return nil }
         defer { currentIndex += 1 }
 
-        // 1
-        try await Task.sleep(secounds: 1)
-        let names = ["Test1", "Test2", "Test3", "Test4", "Test5"]
-        return User(name: names[currentIndex - 1], image: "Test\(currentIndex)")
-        // 2
-//        let realImage = try await FetchImageManager.downloadImage()
-//        let names = ["Test1", "Test2", "Test3", "Test4", "Test5"]
-//        return User(name: names[currentIndex - 1], image: "Test\(currentIndex)", realImage: realImage)
+        let realImage = try await FetchImageManager.downloadImage(url: url)
+        return User(name: userData[currentIndex].name, realImage: realImage)
     }
 }
 
@@ -53,7 +53,37 @@ class FetchUserManager {
         return User(name: names[id - 1], image: "Test\(id)")
     }
     
-    @Sendable static func fetch(userIDs: [Int]) async -> [User] {
+    static func fetch(userDatas: [UserData]) async -> [User] {
+        await withTaskGroup(of: User.self, returning: [User].self) { group in
+            for data in userDatas {
+                group.addTask {
+                    let realImage = try? await FetchImageManager.downloadImage(url: URL(string: data.imageUrl)!)
+                    return User(name: data.name, realImage: realImage)
+                }
+            }
+            var users = [User]()
+            for await result in group {
+                users.append(result)
+            }
+            return users
+        }
+        // sequential
+//        await withTaskGroup(of: (user: User, seq: Int).self, returning: [User].self) { group in
+//            for data in userDatas {
+//                group.addTask {
+//                    let realImage = try? await FetchImageManager.downloadImage(url: URL(string: data.imageUrl)!)
+//                    return (User(name: data.name, realImage: realImage), data.seq)
+//                }
+//            }
+//            var users = Array(repeating: User?.none, count: userDatas.count)
+//            for await result in group {
+//                users[result.seq - 1] = result.user
+//            }
+//            return users.compactMap { $0 }
+//        }
+    }
+    
+    static func fetch(userIDs: [Int]) async -> [User] {
         await withTaskGroup(of: User.self, returning: [User].self) { group in
             for id in userIDs {
                 group.addTask {
@@ -98,10 +128,15 @@ class FetchUserManager {
     }
 }
 
+struct UserData {
+    var name: String
+    var imageUrl: String
+    var seq: Int
+}
 
 struct User {
     var name: String
-    var image: String
+    var image: String = ""
     var realImage: UIImage?
     
     static let empty = User(name: "匿名", image: "avatarPlaceholder")
@@ -141,8 +176,8 @@ extension ContentView: View {
                 List($users.indices, id: \.self) { index in
                     let user = users[index]
                     HStack {
-//                        Image(uiImage: user.realImage ?? UIImage(imageLiteralResourceName: "avatarPlaceholder"))
-                        Image(user.image)
+                        Image(uiImage: user.realImage ?? UIImage(imageLiteralResourceName: "avatarPlaceholder"))
+//                        Image(user.image)
                             .resizable().aspectRatio(contentMode: .fill).clipShape(Circle())
                             .frame(width: 120, height: 120)
                             .padding()
@@ -166,6 +201,13 @@ extension ContentView: View {
         isLoading = true
         let startTime = Date.now
         let userIDs = Array(1...5)
+        let userDatas: [UserData] = [
+            UserData(name: "Test1", imageUrl: "https://upload-images.jianshu.io/upload_images/5809200-a99419bb94924e6d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240", seq: 1),
+            UserData(name: "Test2", imageUrl: "https://upload-images.jianshu.io/upload_images/5809200-736bc3917fe92142.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240", seq: 2),
+            UserData(name: "Test3", imageUrl: "https://upload-images.jianshu.io/upload_images/5809200-7fe8c323e533f656.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240", seq: 3),
+            UserData(name: "Test4", imageUrl: "https://upload-images.jianshu.io/upload_images/5809200-c12521fbde6c705b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240", seq: 4),
+            UserData(name: "Test5", imageUrl: "https://upload-images.jianshu.io/upload_images/5809200-caf66b935fd00e18.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240", seq: 5)
+        ]
         // 1
 //        users = await FetchUserManager.fetch(userIDs: userIDs)
 //        timeMessage = getElapsedTime(from: startTime)
@@ -178,16 +220,24 @@ extension ContentView: View {
 //            timeMessage = "發生錯誤 \(error)"
 //        }
         // 2
-        // 3
+        // Real image url
+        // 1
+//        users = await FetchUserManager.fetch(userDatas: userDatas)
+//        timeMessage = getElapsedTime(from: startTime)
+        // 2
+        let imageLoader = UserImageLoader(userData: userDatas)
         do {
-            for try await user in UserImageLoader(ids: userIDs) {
+            for try await user in imageLoader {
+//                if user.name == "Test3" {
+//                    imageLoader.currentIndex += 1
+//                }
                 users.append(user)
             }
             timeMessage = getElapsedTime(from: startTime)
         } catch {
             timeMessage = "發生錯誤 \(error)"
         }
-        // 3
+        // 2
         isLoading = false
     }
     

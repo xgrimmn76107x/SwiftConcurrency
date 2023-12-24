@@ -118,6 +118,13 @@ class FetchImageManager {
         }
         return UIImage(data: data)!
     }
+    static func downloadImage(url: URL) async throws -> UIImage {
+        let (data, response) = try await URLSession.shared.data(from: url)
+        guard let response = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
+            fatalError()
+        }
+        return UIImage(data: data)!
+    }
     
     static func downloadImage(completion: @escaping (UIImage?, Error?) -> Void) {
         URLSession.shared.dataTask(with: randomImageUrl) { data, response, error in
